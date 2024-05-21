@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import mongoose from 'mongoose';
 import config from './app/config';
 import app from './app';
@@ -9,7 +10,7 @@ async function main() {
     await mongoose.connect(db_url as string);
 
     app.listen(port, () => {
-      console.log(`Example app listening on port ${port}`);
+      console.log(`TS_Mongoose_E-commerce_API app listening on port ${port}`);
     });
   } catch (error) {
     console.error(error);
