@@ -16,8 +16,18 @@ const getAProductFromDB = async (id: string) => {
   return result;
 };
 
+const updateAProductFromDB = async (id: string, payload: IProduct) => {
+  const result = await Product.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  });
+
+  return result;
+};
+
 export const ProductServices = {
   createProductIntoDB,
   getAllProductsFromDB,
   getAProductFromDB,
+  updateAProductFromDB,
 };
