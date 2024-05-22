@@ -17,7 +17,3 @@ export interface IProduct {
   variants: IVariant[];
   inventory: IInventory;
 }
-
-export type TQuery = {
-  [key: string]: { $regex: unknown; $options: 'i' } | boolean;
-};

@@ -1,4 +1,4 @@
-import { IProduct, TQuery } from './product.interface';
+import { IProduct } from './product.interface';
 import { Product } from './product.model';
 
 const createProductIntoDB = async (payload: IProduct) => {
@@ -12,7 +12,7 @@ const getAllProductsFromDB = async (query: Record<string, unknown>) => {
   if (searchTerm) {
     const productFieldPaths = ['name', 'description', 'category'];
 
-    const queries: TQuery[] = productFieldPaths.map((field) => ({
+    const queries = productFieldPaths.map((field) => ({
       [field]: { $regex: searchTerm, $options: 'i' },
     }));
 
