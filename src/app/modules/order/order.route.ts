@@ -13,6 +13,4 @@ router.post(
 
 router.get('/', OrderControllers.getAllOrders);
 
-router.get('/:userEmail', OrderControllers.getAllOrdersOfAnUser);
-
 export const OrderRoutes = router;

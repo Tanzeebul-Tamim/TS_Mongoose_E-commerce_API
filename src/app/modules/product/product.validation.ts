@@ -12,11 +12,25 @@ const inventoryValidationSchema = z.object({
 
 const productValidationSchema = z.object({
   body: z.object({
-    name: z.string().min(1).max(20).trim(),
-    description: z.string().min(1).max(60).trim(),
+    name: z
+      .string()
+      .min(1, { message: 'Name is required' })
+      .max(20, { message: 'Name cannot exceed 20 characters' })
+      .trim(),
+    description: z
+      .string()
+      .min(1, { message: 'Description is required' })
+      .max(60, { message: 'Description cannot exceed 60 characters' })
+      .trim(),
     price: z.number(),
-    category: z.string().min(1).max(20).trim(),
-    tags: z.array(z.string().min(1).max(8)),
+    category: z
+      .string()
+      .min(1, { message: 'Category is required' })
+      .max(20, { message: 'Category cannot exceed 20 characters' })
+      .trim(),
+    tags: z.array(
+      z.string().max(8, { message: 'Tag cannot exceed 20 characters' }).trim(),
+    ),
     variants: z.array(variantValidationSchema),
     inventory: inventoryValidationSchema,
   }),

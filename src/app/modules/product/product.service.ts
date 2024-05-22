@@ -10,8 +10,9 @@ const getAllProductsFromDB = async (query: Record<string, unknown>) => {
   const { searchTerm } = query;
 
   if (searchTerm) {
-    const productFieldPaths = ['name', 'description', 'category'];
+    const productFieldPaths = ['name', 'description', 'category']; // searchable fields
 
+    // making an array of queries with each searchable fields
     const queries = productFieldPaths.map((field) => ({
       [field]: { $regex: searchTerm, $options: 'i' },
     }));

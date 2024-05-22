@@ -16,38 +16,31 @@ const createOrder = catchAsync(async (req, res) => {
 });
 
 const getAllOrders = catchAsync(async (req, res) => {
-  const result = await OrderServices.getAllOrdersFromDB();
+  const { query } = req;
+  const result = await OrderServices.getAllOrdersFromDB(query);
 
   if (result.length > 0) {
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'Orders fetched successfully!',
-      data: result,
-    });
+    if (query.email) {
+      sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Orders fetched successfully for user email!',
+        data: result,
+      });
+    } else {
+      sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Orders fetched successfully!',
+        data: result,
+      });
+    }
   } else {
-    throw new AppError(httpStatus.NOT_FOUND, 'No orders found!');
-  }
-});
-
-const getAllOrdersOfAnUser = catchAsync(async (req, res) => {
-  const { userEmail } = req.params;
-  const result = await OrderServices.getAllOrdersOfAnUserFromDB(userEmail);
-
-  if (result.length > 0) {
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'Orders fetched successfully for user email!',
-      data: result,
-    });
-  } else {
-    throw new AppError(httpStatus.NOT_FOUND, 'No orders found for user!');
+    throw new AppError(httpStatus.NOT_FOUND, 'Orders not found!');
   }
 });
 
 export const OrderControllers = {
   createOrder,
   getAllOrders,
-  getAllOrdersOfAnUser,
 };

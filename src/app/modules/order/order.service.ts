@@ -6,18 +6,19 @@ const createOrderIntoDB = async (payload: IOrder) => {
   return result;
 };
 
-const getAllOrdersFromDB = async () => {
-  const result = await Order.find();
-  return result;
-};
+const getAllOrdersFromDB = async (query: Record<string, unknown>) => {
+  const { email } = query;
 
-const getAllOrdersOfAnUserFromDB = async (email: string) => {
-  const result = await Order.find({ email });
-  return result;
+  if (email) {
+    const result = await Order.find({ email });
+    return result;
+  } else {
+    const result = await Order.find();
+    return result;
+  }
 };
 
 export const OrderServices = {
   createOrderIntoDB,
   getAllOrdersFromDB,
-  getAllOrdersOfAnUserFromDB,
 };
