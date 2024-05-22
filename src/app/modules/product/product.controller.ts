@@ -1,3 +1,4 @@
+import AppError from '../../errors/AppError';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { ProductServices } from './product.service';
@@ -18,20 +19,24 @@ const getAllProducts = catchAsync(async (req, res) => {
   const { query } = req;
   const result = await ProductServices.getAllProductsFromDB(query);
 
-  if (query.searchTerm) {
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: `Products matching search term '${query.searchTerm}' fetched successfully!`,
-      data: result,
-    });
+  if (result.length > 0) {
+    if (query.searchTerm) {
+      sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: `Products matching search term '${query.searchTerm}' fetched successfully!`,
+        data: result,
+      });
+    } else {
+      sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Products fetched successfully!',
+        data: result,
+      });
+    }
   } else {
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'Products fetched successfully!',
-      data: result,
-    });
+    throw new AppError(httpStatus.NOT_FOUND, 'No products found!');
   }
 });
 
@@ -39,12 +44,16 @@ const getAProduct = catchAsync(async (req, res) => {
   const { productId } = req.params;
   const result = await ProductServices.getAProductFromDB(productId);
 
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Product fetched successfully!',
-    data: result,
-  });
+  if (result) {
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Product fetched successfully!',
+      data: result,
+    });
+  } else {
+    throw new AppError(httpStatus.NOT_FOUND, 'Product not found!');
+  }
 });
 
 const updateAProduct = catchAsync(async (req, res) => {
@@ -62,14 +71,18 @@ const updateAProduct = catchAsync(async (req, res) => {
 
 const deleteAProduct = catchAsync(async (req, res) => {
   const { productId } = req.params;
-  await ProductServices.deleteAProductFromDB(productId);
+  const result = await ProductServices.deleteAProductFromDB(productId);
 
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Product deleted successfully',
-    data: null,
-  });
+  if (result) {
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Product deleted successfully!',
+      data: null,
+    });
+  } else {
+    throw new AppError(httpStatus.NOT_FOUND, 'Product not found!');
+  }
 });
 
 export const ProductControllers = {

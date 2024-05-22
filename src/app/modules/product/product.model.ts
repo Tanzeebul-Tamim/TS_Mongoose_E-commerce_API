@@ -1,5 +1,7 @@
 import { Schema, model } from 'mongoose';
 import { IInventory, IProduct, IVariant } from './product.interface';
+import AppError from '../../errors/AppError';
+import httpStatus from 'http-status';
 
 const variantSchema = new Schema<IVariant>({
   type: { type: String, required: [true, 'Type is a required field'] },
@@ -31,6 +33,17 @@ const productSchema = new Schema<IProduct>({
     type: inventorySchema,
     required: [true, 'Inventory is a required field'],
   },
+});
+
+productSchema.pre('findOneAndUpdate', async function (next) {
+  const query = this.getQuery();
+  const doesProductExist = await Product.findOne(query);
+
+  if (!doesProductExist) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Product not found!');
+  }
+
+  next();
 });
 
 export const Product = model<IProduct>('Product', productSchema);
