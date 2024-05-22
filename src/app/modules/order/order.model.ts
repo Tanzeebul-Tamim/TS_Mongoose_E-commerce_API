@@ -8,7 +8,6 @@ const orderSchema = new Schema<IOrder>({
   email: { type: String, required: [true, 'Email is a required field'] },
   productId: {
     type: Schema.Types.ObjectId,
-    ref: 'Product',
     required: [true, 'Product Id is a required field'],
   },
   price: { type: Number, required: [true, 'Price is a required field'] },
@@ -22,7 +21,10 @@ orderSchema.pre('save', async function (next) {
   const doesProductExist = await Product.findById(this.productId);
 
   if (!doesProductExist) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Invalid Product Id!');
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Product not found! Enter a valid product Id.',
+    );
   }
 
   const orderQuantity = this.quantity;
@@ -45,7 +47,7 @@ orderSchema.pre('save', async function (next) {
   } else {
     throw new AppError(
       httpStatus.BAD_REQUEST,
-      'Insufficient quantity available in inventory"',
+      `Insufficient quantity available in inventory. ${availableQuantity} piece in stock.`,
     );
   }
 });

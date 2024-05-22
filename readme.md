@@ -1,4 +1,4 @@
-# TS_Mongoose_E-commerce_API
+# TS Mongoose E-commerce API
 
 ## Overview
 
@@ -191,6 +191,11 @@ Using **Zod** for request validation:
   npm run format
   ```
 
-## Deployment
+## Live Deployment
 
-- **Live Server Link**: [https://your-live-server-link](https://your-live-server-link)
+The API is deployed at vercel and can be accessed at the following URL:
+
+- **Live Server Link**: https://tsmongoosee-commerceapi-tamim200091yahoocoms-projects.vercel.app/
+
+You can interact with the endpoints described above through this live server for testing and demonstration purposes.
+
