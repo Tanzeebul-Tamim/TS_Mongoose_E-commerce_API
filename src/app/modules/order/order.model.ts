@@ -24,8 +24,30 @@ orderSchema.pre('save', async function (next) {
   if (!doesProductExist) {
     throw new AppError(httpStatus.NOT_FOUND, 'Invalid Product Id!');
   }
-  
-  next();
+
+  const orderQuantity = this.quantity;
+
+  const availableQuantity = doesProductExist.inventory.quantity;
+  let availability = doesProductExist.inventory.inStock;
+
+  if (availableQuantity >= orderQuantity) {
+    const updatedQuantity = availableQuantity - orderQuantity;
+    if (updatedQuantity === 0) {
+      availability = false;
+    }
+
+    await Product.findByIdAndUpdate(this.productId, {
+      'inventory.quantity': updatedQuantity,
+      'inventory.inStock': availability,
+    });
+
+    next();
+  } else {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Insufficient quantity available in inventory"',
+    );
+  }
 });
 
 export const Order = model<IOrder>('Order', orderSchema);
