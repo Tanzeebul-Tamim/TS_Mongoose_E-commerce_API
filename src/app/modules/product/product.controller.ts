@@ -18,12 +18,21 @@ const getAllProducts = catchAsync(async (req, res) => {
   const { query } = req;
   const result = await ProductServices.getAllProductsFromDB(query);
 
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Products fetched successfully!',
-    data: result,
-  });
+  if (query.searchTerm) {
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: `Products matching search term '${query.searchTerm}' fetched successfully!`,
+      data: result,
+    });
+  } else {
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Products fetched successfully!',
+      data: result,
+    });
+  }
 });
 
 const getAProduct = catchAsync(async (req, res) => {

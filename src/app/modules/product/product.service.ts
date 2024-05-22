@@ -8,57 +8,15 @@ const createProductIntoDB = async (payload: IProduct) => {
 
 const getAllProductsFromDB = async (query: Record<string, unknown>) => {
   const { searchTerm } = query;
-  
+
   if (searchTerm) {
-    const productFieldPaths = [
-      'name',
-      'description',
-      'price',
-      'category',
-      'tags',
-      'variants.type',
-      'variants.value',
-      'inventory.inStock',
-    ];
+    const productFieldPaths = ['name', 'description', 'category'];
 
     const queries: TQuery[] = productFieldPaths.map((field) => ({
       [field]: { $regex: searchTerm, $options: 'i' },
     }));
 
-    if (searchTerm === 'true') {
-      queries[7] = { 'inventory.inStock': true };
-    } else if (searchTerm === 'false') {
-      queries[7] = { 'inventory.inStock': false };
-    }
-
-    const searchQuery = [
-      { $unwind: '$tags' },
-      { $unwind: '$variants' },
-      {
-        $match: {
-          $or: queries,
-        },
-      },
-      {
-        $group: {
-          _id: '$_id',
-          name: { $first: '$name' },
-          description: { $first: '$description' },
-          price: { $first: '$price' },
-          category: { $first: '$category' },
-          tags: { $addToSet: '$tags' },
-          variants: {
-            $addToSet: {
-              type: '$variants.type',
-              value: '$variants.value',
-            },
-          },
-          inventory: { $first: '$inventory' },
-        },
-      },
-    ];
-
-    const result = await Product.aggregate(searchQuery);
+    const result = await Product.find({ $or: queries });
     return result;
   } else {
     const result = await Product.find();
