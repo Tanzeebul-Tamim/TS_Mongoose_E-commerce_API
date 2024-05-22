@@ -1,7 +1,5 @@
-import { IProduct } from './product.interface';
+import { IProduct, TQuery } from './product.interface';
 import { Product } from './product.model';
-import { generateSearchableFieldPath } from './product.utils';
-import sampleProduct from '../../../sample/product.json';
 
 const createProductIntoDB = async (payload: IProduct) => {
   const result = await Product.create(payload);
@@ -9,17 +7,58 @@ const createProductIntoDB = async (payload: IProduct) => {
 };
 
 const getAllProductsFromDB = async (query: Record<string, unknown>) => {
-  const queryKeys = Object.keys(query);
+  const { searchTerm } = query;
+  
+  if (searchTerm) {
+    const productFieldPaths = [
+      'name',
+      'description',
+      'price',
+      'category',
+      'tags',
+      'variants.type',
+      'variants.value',
+      'inventory.inStock',
+    ];
 
-  if (queryKeys.includes('searchTerm')) {
-    const productFieldPaths = generateSearchableFieldPath(sampleProduct);
+    const queries: TQuery[] = productFieldPaths.map((field) => ({
+      [field]: { $regex: searchTerm, $options: 'i' },
+    }));
 
-    const result = await Product.find({
-      $or: productFieldPaths.map((field) => ({
-        [field]: { $regex: query.searchTerm, $options: 'i' },
-      })),
-    });
+    if (searchTerm === 'true') {
+      queries[7] = { 'inventory.inStock': true };
+    } else if (searchTerm === 'false') {
+      queries[7] = { 'inventory.inStock': false };
+    }
 
+    const searchQuery = [
+      { $unwind: '$tags' },
+      { $unwind: '$variants' },
+      {
+        $match: {
+          $or: queries,
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          name: { $first: '$name' },
+          description: { $first: '$description' },
+          price: { $first: '$price' },
+          category: { $first: '$category' },
+          tags: { $addToSet: '$tags' },
+          variants: {
+            $addToSet: {
+              type: '$variants.type',
+              value: '$variants.value',
+            },
+          },
+          inventory: { $first: '$inventory' },
+        },
+      },
+    ];
+
+    const result = await Product.aggregate(searchQuery);
     return result;
   } else {
     const result = await Product.find();
