@@ -169,7 +169,7 @@ Using **Zod** for request validation:
    ```
 
 5. **Access the API**
-   - The API will be available at `http://localhost:3000`
+   - The API will be available at `http://localhost:5000`
 
 ## Linting
 
@@ -193,9 +193,10 @@ Using **Zod** for request validation:
 
 ## Live Deployment
 
-The API is deployed at vercel and can be accessed at the following URL:
+The API is deployed at vercel and can be accessed through [here](https://tsmongoosee-commerceapi-tamim200091yahoocoms-projects.vercel.app/)
 
-- **Live Server Link**: https://tsmongoosee-commerceapi-tamim200091yahoocoms-projects.vercel.app/
+<br>
+<hr>
 
-You can interact with the endpoints described above through this live server for testing and demonstration purposes.
+<div align="center">You can interact with the endpoints described above through this live server for testing and demonstration purposes.</div>
 
